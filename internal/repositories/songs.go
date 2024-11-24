@@ -86,6 +86,9 @@ func (repo *Songs) Get(ctx context.Context, params dto.GetSongsRequest) ([]entit
 	if params.Name != "" {
 		queryBuilder = queryBuilder.Where(squirrel.Eq{"LOWER(name)": strings.ToLower(params.Name)})
 	}
+	if params.Link != "" {
+		queryBuilder = queryBuilder.Where(squirrel.Eq{"LOWER(link)": strings.ToLower(params.Link)})
+	}
 
 	releaseAfterFilter, releaseBeforeFilter := false, false
 	if !params.ReleaseBefore.IsZero() {
