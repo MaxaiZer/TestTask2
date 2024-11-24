@@ -110,6 +110,26 @@ func TestGetSongs_ByReleaseBefore(t *testing.T) {
 	assert.Equal(t, "Wings", response.Songs[0].Group)
 }
 
+func TestGetSongs_ByLink(t *testing.T) {
+
+	link := "https://www.youtube.com/watch?v=wYQZHNwIUq8"
+
+	req, _ := http.NewRequest("GET", fmt.Sprintf("/api/v1/songs?link=%s", link), nil)
+	w := httptest.NewRecorder()
+	ginEngine.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var response dto.GetSongsResponse
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+
+	assert.NotEmpty(t, response.Songs)
+	for _, song := range response.Songs {
+		assert.Equal(t, link, song.Link)
+	}
+}
+
 func TestGetSongs_Pagination(t *testing.T) {
 
 	pageSize := 1
