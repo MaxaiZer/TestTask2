@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"test-task/internal/dto"
 	"test-task/internal/entities"
@@ -36,7 +37,11 @@ func (s *SongsService) AddSong(ctx context.Context, request dto.AddSongRequest) 
 
 	log.Debugf("AddSong: %v", request)
 
-	url := fmt.Sprintf("%s/info?group=%s&song=%s", s.songDetailsAPI.URL, request.Group, request.Name)
+	url := fmt.Sprintf("%s/info?group=%s&song=%s",
+		s.songDetailsAPI.URL,
+		url.QueryEscape(request.Group),
+		url.QueryEscape(request.Name),
+	)
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, fmt.Errorf("couldn't send request to song details API: %w", err)
