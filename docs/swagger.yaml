@@ -1,0 +1,268 @@
+basePath: /api/v1
+definitions:
+  dto.AddSongRequest:
+    properties:
+      group:
+        example: The Beatles
+        type: string
+      name:
+        example: Let It Be
+        type: string
+    required:
+    - group
+    - name
+    type: object
+  dto.AddSongResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  dto.EditSongRequest:
+    properties:
+      group:
+        example: The Beatles
+        type: string
+      link:
+        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        type: string
+      name:
+        example: Let It Be
+        type: string
+      release_date:
+        example: "2006-01-30"
+        type: string
+    required:
+    - group
+    - link
+    - name
+    - release_date
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  dto.GetSongVersesResponse:
+    properties:
+      verses:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.GetSongsResponse:
+    properties:
+      songs:
+        items:
+          $ref: '#/definitions/entities.Song'
+        type: array
+    type: object
+  entities.Song:
+    properties:
+      group:
+        type: string
+      id:
+        type: integer
+      link:
+        type: string
+      name:
+        type: string
+      releaseDate:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for test task.
+  title: Songs API
+  version: "1.0"
+paths:
+  /songs:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all songs, optionally filtered by query parameters
+      parameters:
+      - example: The Beatles
+        in: query
+        name: group
+        type: string
+      - example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        in: query
+        name: link
+        type: string
+      - example: Let It Be
+        in: query
+        name: name
+        type: string
+      - default: 1
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        in: query
+        name: page_size
+        type: integer
+      - example: "2006-01-30"
+        in: query
+        name: release_after
+        type: string
+      - example: "2006-01-30"
+        in: query
+        name: release_before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetSongsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get all songs
+      tags:
+      - songs
+    post:
+      consumes:
+      - application/json
+      description: Add a new song to the database
+      parameters:
+      - description: Song Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddSongRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.AddSongResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Add a new song
+      tags:
+      - songs
+  /songs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a song from the database
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Delete a song
+      tags:
+      - songs
+    put:
+      consumes:
+      - application/json
+      description: Edit the details of an existing song in the database
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Song Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EditSongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Edit an existing song
+      tags:
+      - songs
+  /songs/{id}/lyrics:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of verses for a specific song
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - default: 1
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetSongVersesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get verses of a song
+      tags:
+      - songs
+swagger: "2.0"
