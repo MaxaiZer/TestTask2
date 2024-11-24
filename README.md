@@ -78,5 +78,5 @@ components:
 - создать файл .env (см. env.sample)
 - docker compose up --build
 
-swagger:
+swagger (только в debug mode, включён по умолчанию в config.env):  
 http://localhost:8080/swagger/index.html
